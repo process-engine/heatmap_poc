@@ -8,11 +8,6 @@ function registerInContainer(container) {
     .register('KpiApiService', KpiApiService)
     .dependencies('IamService', 'FlowNodeInstanceRepository', 'LoggingRepository')
     .singleton();
-
-  container
-    .register('ManagementApiService', ManagementApiService)
-    .dependencies('ExecutionContextFacadeFactory', 'KpiApiService', 'LoggingApiService', 'TokenHistoryApiService')
-    .singleton();
 }
 
 module.exports.registerInContainer = registerInContainer;

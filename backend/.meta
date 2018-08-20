@@ -1,0 +1,10 @@
+{
+  "projects": {
+    "kpi_api": "/kpi_api.git",
+    "logging_api": "/logging_api.git",
+    "logging.repository.file_system": "/logging.repository.file_system.git",
+    "metrics_api": "/metrics_api.git",
+    "token_history_api": "/token_history_api.git",
+    "_application": "/_application.git"
+  }
+}
