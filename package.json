@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "description": "",
   "scripts": {
-    "test": "mocha test/**/*.test.js",
+    "test": "cross-env NODE_ENV=sqlite CONFIG_PATH=backend/_application/config mocha test/**/**/*.test.js",
     "build": "./build.sh",
     "postinstall": "minstall --trust-local-modules src"
   },
@@ -19,6 +19,7 @@
   "homepage": "https://github.com/process-engine/solution_explorer_poc#readme",
   "dependencies": {
     "addict-ioc": "^2.3.7",
+    "cross-env": "^5.2.0",
     "meta-npm": "0.0.18",
     "minstall": "^3.3.0",
     "mocha": "^5.2.0",
