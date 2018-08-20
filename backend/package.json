@@ -11,5 +11,9 @@
   "devDependencies": {
     "meta-npm": "0.0.18",
     "minstall": "^3.3.0"
+  },
+  "dependencies": {
+    "@essential-projects/timing": "^3.0.4",
+    "@essential-projects/timing_contracts": "^3.0.0"
   }
 }

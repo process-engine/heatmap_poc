@@ -9,13 +9,13 @@ const iocModuleNames = [
   '@essential-projects/bootstrapper_node',
   '@essential-projects/event_aggregator',
   '@essential-projects/services',
+  '@essential-projects/timing',
   '@process-engine/consumer_api_core',
   '@process-engine/flow_node_instance.repository.sequelize',
   '@process-engine/iam',
   '@process-engine/process_engine',
   '@process-engine/process_model.repository.sequelize',
   '@process-engine/timers.repository.sequelize',
-  '.',
 ];
 
 const iocModules = iocModuleNames.map((moduleName) => {
@@ -43,6 +43,7 @@ async function start() {
     container.validateDependencies();
 
     const appPath = path.resolve(__dirname);
+    console.log(appPath);
     const bootstrapper = await container.resolveAsync('AppBootstrapper', [appPath]);
 
     logger.info('Bootstrapper started.');
