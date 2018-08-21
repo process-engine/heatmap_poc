@@ -8,11 +8,22 @@ const iocModuleNames = [
   '@essential-projects/bootstrapper',
   '@essential-projects/bootstrapper_node',
   '@essential-projects/event_aggregator',
+  '@essential-projects/http_extension',
   '@essential-projects/services',
   '@essential-projects/timing',
   '@process-engine/consumer_api_core',
+  '@process-engine/consumer_api_http',
+  '@process-engine/deployment_api_core',
+  '@process-engine/deployment_api_http',
   '@process-engine/flow_node_instance.repository.sequelize',
+  '@process-engine/heatmap_poc_kpi_api',
+  '@process-engine/heatmap_poc_logging_api',
+  '@process-engine/heatmap_poc_logging.repository.file_system',
+  '@process-engine/heatmap_poc_metrics_api',
+  '@process-engine/heatmap_poc_token_history_api',
   '@process-engine/iam',
+  '@process-engine/management_api_core',
+  '@process-engine/management_api_http',
   '@process-engine/process_engine',
   '@process-engine/process_model.repository.sequelize',
   '@process-engine/timers.repository.sequelize',
@@ -24,9 +35,6 @@ const iocModules = iocModuleNames.map((moduleName) => {
 
 let container;
 
-// NOTE: This startup script allows for the usage of the BPMN studio in conjunction with
-// the integrationtest app, which enables us to edit the integrationtests' bpmn files without having
-// to import them manually.
 async function start() {
 
   try {
