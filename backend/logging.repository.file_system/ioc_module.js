@@ -6,6 +6,7 @@ function registerInContainer(container) {
 
   container
     .register('LoggingRepository', LoggingRepository)
+    .configure('process_engine:logging_repository')
     .singleton();
 }
 
