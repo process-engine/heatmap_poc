@@ -44,7 +44,7 @@
     "@process-engine/management_api_core": "feature~implement_heatmap",
     "@process-engine/management_api_http": "feature~implement_heatmap",
     "@process-engine/process_engine_contracts": "feature~store_enter_and_exit_token_separately",
-    "@process-engine/process_engine": "feature~add_metrics",
+    "@process-engine/process_engine": "feature~store_enter_and_exit_token_separately",
     "@process-engine/process_model.repository.sequelize": "^2.1.2",
     "@process-engine/timers.repository.sequelize": "^2.0.0",
     "addict-ioc": "^2.3.7",

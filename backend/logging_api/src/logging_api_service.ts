@@ -1,8 +1,8 @@
-import {ILoggingRepository, ILoggingService, LogEntry, LogLevel} from '@process-engine/logging_api_contracts';
+import {ILoggingApiService, ILoggingRepository, LogEntry, LogLevel} from '@process-engine/logging_api_contracts';
 
 import {IIAMService, IIdentity} from '@essential-projects/iam_contracts';
 
-export class LoggingApiService implements ILoggingService {
+export class LoggingApiService implements ILoggingApiService {
 
   private _iamService: IIAMService;
   private _loggingRepository: ILoggingRepository;
@@ -41,9 +41,10 @@ export class LoggingApiService implements ILoggingService {
   public async writeLogForFlowNode(correlationId: string,
                                    processModelId: string,
                                    flowNodeInstanceId: string,
+                                   flowNodeId: string,
                                    logLevel: LogLevel,
                                    message: string,
                                    timestamp: Date): Promise<void> {
-    await this.loggingRepository.writeLogForFlowNode(correlationId, processModelId, flowNodeInstanceId, logLevel, message, timestamp);
+    await this.loggingRepository.writeLogForFlowNode(correlationId, processModelId, flowNodeInstanceId, flowNodeId, logLevel, message, timestamp);
   }
 }
