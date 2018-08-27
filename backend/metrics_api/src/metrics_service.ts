@@ -1,5 +1,5 @@
 import {ILoggingRepository, LogLevel} from '@process-engine/logging_api_contracts';
-import {IMetricsService} from '@process-engine/metrics_api_contracts';
+import {IMetricsService, ProcessToken} from '@process-engine/metrics_api_contracts';
 
 export class MetricsService implements IMetricsService {
 
@@ -29,49 +29,77 @@ export class MetricsService implements IMetricsService {
                                             processModelId: string,
                                             flowNodeInstanceId: string,
                                             flowNodeId: string,
+                                            processToken: ProcessToken,
                                             timestamp: Date): Promise<void> {
+
+    const logMessage: string = this._createLogMessage('FNI Entered', processToken);
+
     await this
       .loggingRepository
-      .writeLogForFlowNode(correlationId, processModelId, flowNodeInstanceId, flowNodeId, LogLevel.info, 'FNI Entered', timestamp);
+      .writeLogForFlowNode(correlationId, processModelId, flowNodeInstanceId, flowNodeId, LogLevel.info, logMessage, timestamp);
   }
 
   public async writeOnFlowNodeInstanceExit(correlationId: string,
                                            processModelId: string,
                                            flowNodeInstanceId: string,
                                            flowNodeId: string,
+                                           processToken: ProcessToken,
                                            timestamp: Date): Promise<void> {
+
+    const logMessage: string = this._createLogMessage('FNI Exited', processToken);
+
     await this
       .loggingRepository
-      .writeLogForFlowNode(correlationId, processModelId, flowNodeInstanceId, flowNodeId, LogLevel.info, 'FNI Exited', timestamp);
+      .writeLogForFlowNode(correlationId, processModelId, flowNodeInstanceId, flowNodeId, LogLevel.info, logMessage, timestamp);
   }
 
   public async writeOnFlowNodeInstanceError(correlationId: string,
                                             processModelId: string,
                                             flowNodeInstanceId: string,
                                             flowNodeId: string,
+                                            processToken: ProcessToken,
                                             timestamp: Date): Promise<void> {
+
+    const logMessage: string = this._createLogMessage('FNI Error', processToken);
+
     await this
       .loggingRepository
-      .writeLogForFlowNode(correlationId, processModelId, flowNodeInstanceId, flowNodeId, LogLevel.info, 'FNI Error', timestamp);
+      .writeLogForFlowNode(correlationId, processModelId, flowNodeInstanceId, flowNodeId, LogLevel.info, logMessage, timestamp);
   }
 
   public async writeOnFlowNodeInstanceSuspend(correlationId: string,
                                               processModelId: string,
                                               flowNodeInstanceId: string,
                                               flowNodeId: string,
+                                              processToken: ProcessToken,
                                               timestamp: Date): Promise<void> {
+
+    const logMessage: string = this._createLogMessage('FNI Suspended', processToken);
+
     await this
       .loggingRepository
-      .writeLogForFlowNode(correlationId, processModelId, flowNodeInstanceId, flowNodeId, LogLevel.info, 'FNI Suspended', timestamp);
+      .writeLogForFlowNode(correlationId, processModelId, flowNodeInstanceId, flowNodeId, LogLevel.info, logMessage, timestamp);
   }
 
   public async writeOnFlowNodeInstanceResume(correlationId: string,
                                              processModelId: string,
                                              flowNodeInstanceId: string,
                                              flowNodeId: string,
+                                             processToken: ProcessToken,
                                              timestamp: Date): Promise<void> {
+
+    const logMessage: string = this._createLogMessage('FNI Resumed', processToken);
+
     await this
       .loggingRepository
-      .writeLogForFlowNode(correlationId, processModelId, flowNodeInstanceId, flowNodeId, LogLevel.info, 'FNI Resumed', timestamp);
+      .writeLogForFlowNode(correlationId, processModelId, flowNodeInstanceId, flowNodeId, LogLevel.info, logMessage, timestamp);
+  }
+
+  private _createLogMessage(metricTypeMessage: string, processToken: ProcessToken): string {
+
+    const stringifiedProcessToken: string = JSON.stringify(processToken);
+    const message: string = `${metricTypeMessage};FlowNodeInstanceToken=${stringifiedProcessToken}`;
+
+    return message;
   }
 }

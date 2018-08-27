@@ -20,7 +20,7 @@
   "homepage": "https://github.com/process-engine/logging_api_core#readme",
   "dependencies": {
     "@essential-projects/iam_contracts": "^3.1.0",
-    "@process-engine/logging_api_contracts": "feature~initial_implementation"
+    "@process-engine/logging_api_contracts": "^0.1.0"
   },
   "devDependencies": {
     "@essential-projects/tslint-config": "1.0.0",

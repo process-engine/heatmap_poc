@@ -19,8 +19,8 @@
   },
   "homepage": "https://github.com/process-engine/metrics_api_core#readme",
   "dependencies": {
-    "@process-engine/logging_api_contracts": "feature~initial_implementation",
-    "@process-engine/metrics_api_contracts": "feature~initial_implementation"
+    "@process-engine/logging_api_contracts": "^0.1.0",
+    "@process-engine/metrics_api_contracts": "^0.1.0"
   },
   "devDependencies": {
     "@essential-projects/tslint-config": "1.0.0",

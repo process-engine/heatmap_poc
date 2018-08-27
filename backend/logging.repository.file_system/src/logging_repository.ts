@@ -8,7 +8,7 @@ export class LoggingRepository implements ILoggingRepository {
 
   public config: any;
 
-  public async getLogsForCorrelation(correlationId: string): Promise<Array<LogEntry>> {
+  public async readLogForCorrelation(correlationId: string): Promise<Array<LogEntry>> {
 
     const folderPath: string = this._buildPath(correlationId);
 
@@ -17,7 +17,7 @@ export class LoggingRepository implements ILoggingRepository {
     return correlationLogs;
   }
 
-  public async getLogsForProcessModel(correlationId: string, processModelId: string): Promise<Array<LogEntry>> {
+  public async readLogForProcessModel(correlationId: string, processModelId: string): Promise<Array<LogEntry>> {
 
     const logFilePath: string = this._buildPath(correlationId, processModelId);
 

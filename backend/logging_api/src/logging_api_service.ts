@@ -21,13 +21,13 @@ export class LoggingApiService implements ILoggingApiService {
   }
 
   // TODO: Add claim checks as soon as necessary claims have been defined.
-  public async getLogsForCorrelation(identity: IIdentity, correlationId: string): Promise<Array<LogEntry>> {
-    return this.loggingRepository.getLogsForCorrelation(correlationId);
+  public async readLogForCorrelation(identity: IIdentity, correlationId: string): Promise<Array<LogEntry>> {
+    return this.loggingRepository.readLogForCorrelation(correlationId);
   }
 
   // TODO: Add claim checks as soon as necessary claims have been defined.
-  public async getLogsForProcessModel(identity: IIdentity, correlationId: string, processModelId: string): Promise<Array<LogEntry>> {
-    return this.loggingRepository.getLogsForProcessModel(correlationId, processModelId);
+  public async readLogForProcessModel(identity: IIdentity, correlationId: string, processModelId: string): Promise<Array<LogEntry>> {
+    return this.loggingRepository.readLogForProcessModel(correlationId, processModelId);
   }
 
   public async writeLogForProcessModel(correlationId: string,
