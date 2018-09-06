@@ -38,7 +38,7 @@ export class LoggingRepository implements ILoggingRepository {
                                        timestamp: Date): Promise<void> {
 
     const logEntryAsString: string = [timestamp, correlationId, processModelId, logLevel, message].join('\t');
-    this._writeLogEntryToFileSystem(correlationId, processModelId, logEntryAsString);
+    await this._writeLogEntryToFileSystem(correlationId, processModelId, logEntryAsString);
   }
 
   public async writeLogForFlowNode(correlationId: string,
@@ -50,15 +50,15 @@ export class LoggingRepository implements ILoggingRepository {
                                    timestamp: Date): Promise<void> {
 
     const logEntryAsString: string = [timestamp, correlationId, processModelId, flowNodeInstanceId, flowNodeId, logLevel, message].join('\t');
-    this._writeLogEntryToFileSystem(correlationId, processModelId, logEntryAsString);
+    await this._writeLogEntryToFileSystem(correlationId, processModelId, logEntryAsString);
   }
 
-  private _writeLogEntryToFileSystem(correlationId: string, processModelId: string, entry: string): void {
+  private async _writeLogEntryToFileSystem(correlationId: string, processModelId: string, entry: string): Promise<void> {
 
     const targetFilePath: string = this._buildPath(correlationId, processModelId);
 
-    FileSystemAdapter.ensureDirectoryExists(targetFilePath);
-    FileSystemAdapter.writeToLogFile(targetFilePath, entry);
+    await FileSystemAdapter.ensureDirectoryExists(targetFilePath);
+    await FileSystemAdapter.writeToLogFile(targetFilePath, entry);
   }
 
   private _buildPath(...pathSegments: Array<string>): string {

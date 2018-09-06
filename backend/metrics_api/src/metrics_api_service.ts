@@ -1,7 +1,7 @@
 import {ILoggingRepository, LogLevel} from '@process-engine/logging_api_contracts';
 import {IMetricsService, ProcessToken} from '@process-engine/metrics_api_contracts';
 
-export class MetricsService implements IMetricsService {
+export class MetricsApiService implements IMetricsService {
 
   private _loggingRepository: ILoggingRepository;
 
@@ -21,8 +21,9 @@ export class MetricsService implements IMetricsService {
     await this.loggingRepository.writeLogForProcessModel(correlationId, processModelId, LogLevel.info, 'Process finished', timestamp);
   }
 
-  public async writeOnProcessError(correlationId: string, processModelId: string, timestamp: Date): Promise<void> {
-    await this.loggingRepository.writeLogForProcessModel(correlationId, processModelId, LogLevel.info, 'Process Error', timestamp);
+  public async writeOnProcessError(correlationId: string, processModelId: string, error: Error, timestamp: Date): Promise<void> {
+    const logMessage: string = `Process Error;Error=${error}`;
+    await this.loggingRepository.writeLogForProcessModel(correlationId, processModelId, LogLevel.info, logMessage, timestamp);
   }
 
   public async writeOnFlowNodeInstanceEnter(correlationId: string,
@@ -32,7 +33,7 @@ export class MetricsService implements IMetricsService {
                                             processToken: ProcessToken,
                                             timestamp: Date): Promise<void> {
 
-    const logMessage: string = this._createLogMessage('FNI Entered', processToken);
+    const logMessage: string = this._createFlowNodeInstanceLogMessage('FNI Entered', processToken);
 
     await this
       .loggingRepository
@@ -46,7 +47,7 @@ export class MetricsService implements IMetricsService {
                                            processToken: ProcessToken,
                                            timestamp: Date): Promise<void> {
 
-    const logMessage: string = this._createLogMessage('FNI Exited', processToken);
+    const logMessage: string = this._createFlowNodeInstanceLogMessage('FNI Exited', processToken);
 
     await this
       .loggingRepository
@@ -58,9 +59,10 @@ export class MetricsService implements IMetricsService {
                                             flowNodeInstanceId: string,
                                             flowNodeId: string,
                                             processToken: ProcessToken,
+                                            error: Error,
                                             timestamp: Date): Promise<void> {
 
-    const logMessage: string = this._createLogMessage('FNI Error', processToken);
+    const logMessage: string = this._createFlowNodeInstanceLogMessage('FNI Error', processToken, error);
 
     await this
       .loggingRepository
@@ -74,7 +76,7 @@ export class MetricsService implements IMetricsService {
                                               processToken: ProcessToken,
                                               timestamp: Date): Promise<void> {
 
-    const logMessage: string = this._createLogMessage('FNI Suspended', processToken);
+    const logMessage: string = this._createFlowNodeInstanceLogMessage('FNI Suspended', processToken);
 
     await this
       .loggingRepository
@@ -88,17 +90,21 @@ export class MetricsService implements IMetricsService {
                                              processToken: ProcessToken,
                                              timestamp: Date): Promise<void> {
 
-    const logMessage: string = this._createLogMessage('FNI Resumed', processToken);
+    const logMessage: string = this._createFlowNodeInstanceLogMessage('FNI Resumed', processToken);
 
     await this
       .loggingRepository
       .writeLogForFlowNode(correlationId, processModelId, flowNodeInstanceId, flowNodeId, LogLevel.info, logMessage, timestamp);
   }
 
-  private _createLogMessage(metricTypeMessage: string, processToken: ProcessToken): string {
+  private _createFlowNodeInstanceLogMessage(metricTypeMessage: string, processToken: ProcessToken, error?: Error): string {
 
     const stringifiedProcessToken: string = JSON.stringify(processToken);
-    const message: string = `${metricTypeMessage};FlowNodeInstanceToken=${stringifiedProcessToken}`;
+    let message: string = `${metricTypeMessage};FlowNodeInstanceToken=${stringifiedProcessToken}`;
+
+    if (error) {
+      message += `;Error=${error}`;
+    }
 
     return message;
   }

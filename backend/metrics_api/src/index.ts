@@ -1,1 +1,1 @@
-export * from './metrics_service';
+export * from './metrics_api_service';
