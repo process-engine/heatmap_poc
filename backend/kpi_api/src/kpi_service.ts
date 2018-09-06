@@ -34,6 +34,7 @@ export class KpiApiService implements IKpiApiService {
 
   public async getRuntimeInformationForProcessModel(identity: IIdentity, processModelId: string): Promise<Array<FlowNodeRuntimeInformation>> {
 
+    // TODO: Use logging repository
     const flowNodeInstances: Array<Runtime.Types.FlowNodeInstance> = await this.flowNodeInstanceRepository.queryByProcessModel(processModelId);
 
     const groupedFlowNodeInstances: GroupedFlowNodeInstances = this._groupFlowNodeInstancesByFlowNodeId(flowNodeInstances);
@@ -52,8 +53,7 @@ export class KpiApiService implements IKpiApiService {
                                                 processModelId: string,
                                                 flowNodeId: string): Promise<FlowNodeRuntimeInformation> {
 
-    // TODO: Make flowNodeInstanceRepository.queryByFlowNodeId return an Array
-    // TODO: Add flowNodeInstanceRepository.queryFlowNodesForProcessModel
+    // TODO: Use logging repository
     const flowNodeInstances: Array<Runtime.Types.FlowNodeInstance> = await this.flowNodeInstanceRepository.queryByProcessModel(processModelId);
 
     const matchingFlowNodeInstances: Array<Runtime.Types.FlowNodeInstance> =
