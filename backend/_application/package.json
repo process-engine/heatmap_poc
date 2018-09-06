@@ -12,7 +12,6 @@
   ],
   "scripts": {
     "start": "cross-env NODE_ENV=sqlite CONFIG_PATH=config node index.js",
-    "start-postgres": "cross-env NODE_ENV=postgres CONFIG_PATH=config node index.js",
     "test-sqlite": "cross-env NODE_ENV=sqlite CONFIG_PATH=config mocha -t 15000 test/*.js --exit",
     "test-postgres": "cross-env NODE_ENV=postgres CONFIG_PATH=config mocha -t 15000 test/*.js --exit",
     "test": "npm run test-sqlite && npm run test-postgres",
