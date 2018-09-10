@@ -58,7 +58,16 @@ describe('Metric API Tests - ', () => {
   });
 
   it('should write entries for each state change of each FlowNodeInstance', () => {
-    // TODO
+    const logEntries = readLogFileContent(expectedLogFilePath);
+
+    const expectedLogMessages = [
+      /FNI Entered/i,
+      /FNI Exited/i,
+    ];
+
+    const expectedFlowNodeEntries = [
+
+    ];
   });
 
   async function executeSampleProcess() {
@@ -77,6 +86,10 @@ describe('Metric API Tests - ', () => {
 
     const logEntries = logFileContent.split('\n');
 
-    return logEntries;
+    const logEntriesWithoutEmptyLines = logEntries.filter((entry) => {
+      return entry.length > 1; // final empty line length will be 1, because of the \n.
+    });
+
+    return logEntriesWithoutEmptyLines;
   }
 });
