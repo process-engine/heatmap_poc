@@ -48,26 +48,43 @@ describe('Metric API Tests - ', () => {
     const processStartWasMeasured = logEntries.some((entry) => {
       return entry.match(expectedLogEntryForProcessStarted);
     });
-    should(processStartWasMeasured).be.true();
+    should(processStartWasMeasured).be.equal(true, 'No process-start metrics were logged for ProcessModel \'heatmap_sample\'!');
 
     const processFinishWasMeasured = logEntries.some((entry) => {
       return entry.match(expectedLogEntryForProcessFinished);
     });
 
-    should(processFinishWasMeasured).be.true();
+    should(processFinishWasMeasured).be.equal(true, 'No process-finished metrics were logged for ProcessModel \'heatmap_sample\'!');
   });
 
   it('should write entries for each state change of each FlowNodeInstance', () => {
     const logEntries = readLogFileContent(expectedLogFilePath);
 
     const expectedLogMessages = [
-      /FNI Entered/i,
-      /FNI Exited/i,
+      'FNI Entered',
+      'FNI Exited',
     ];
 
     const expectedFlowNodeEntries = [
-
+      'StartEvent_1mox3jl',
+      'ExclusiveGateway_0fi1ct7',
+      'Task_1sy1ibw',
+      'ExclusiveGateway_134ybqm',
+      'EndEvent_0eie6q6',
     ];
+
+    for (const flowNodeName of expectedFlowNodeEntries) {
+      for (const message of expectedLogMessages) {
+
+        const expectedLogEntry = new RegExp(`heatmap_sample.*?${flowNodeName}.*?info.*?${message}`, 'i');
+
+        const logHasMatchingEntry = logEntries.some((entry) => {
+          return entry.match(expectedLogEntry);
+        });
+
+        should(logHasMatchingEntry).be.equal(true, `No '${message}' type metrics were logged for FlowNode ${flowNodeName}!`);
+      }
+    }
   });
 
   async function executeSampleProcess() {
