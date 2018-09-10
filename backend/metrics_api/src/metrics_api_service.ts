@@ -103,7 +103,7 @@ export class MetricsApiService implements IMetricsService {
     let message: string = `${metricTypeMessage};FlowNodeInstanceToken=${stringifiedProcessToken}`;
 
     if (error) {
-      message += `;Error=${error}`;
+      message += `;Error=${JSON.stringify(error)}`;
     }
 
     return message;
