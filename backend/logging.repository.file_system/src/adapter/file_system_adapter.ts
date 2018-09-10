@@ -74,7 +74,8 @@ export function readAndParseDirectory(dirPath: string): Array<LogEntry> {
   const correlationLogs: Array<LogEntry> = [];
 
   for (const fileName of logfileNames) {
-    const logFileEntries: Array<LogEntry> = readAndParseFile(fileName);
+    const fullFilePath: string = path.join(dirPath, fileName);
+    const logFileEntries: Array<LogEntry> = readAndParseFile(fullFilePath);
     Array.prototype.push.apply(correlationLogs, logFileEntries);
   }
 
@@ -94,7 +95,12 @@ export function readAndParseFile(filePath: string): Array<LogEntry> {
 
   const logEntriesRaw: Array<string> = logFileContent.split('\n');
 
-  const logEntries: Array<LogEntry> = logEntriesRaw.map(_createLogEntryFromRawData);
+  // Filter out empty lines and the final new line.
+  const logEntriesFiltered: Array<string> = logEntriesRaw.filter((entry: string) => {
+    return entry.length > 0;
+  });
+
+  const logEntries: Array<LogEntry> = logEntriesFiltered.map(_createLogEntryFromRawData);
 
   return logEntries;
 }
