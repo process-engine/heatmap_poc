@@ -11,9 +11,9 @@
       <bpmn:lane id="Lane_1xzf0d3" name="">
         <bpmn:flowNodeRef>StartEvent_1mox3jl</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>EndEvent_0eie6q6</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>Task_0julnc5</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>Task_1sy1ibw</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>Task_04fbo5q</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>UserTask_1</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>ServiceTask_1</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>ScriptTask_1</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>ExclusiveGateway_0fi1ct7</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>ExclusiveGateway_134ybqm</bpmn:flowNodeRef>
       </bpmn:lane>
@@ -24,33 +24,33 @@
     </bpmn:startEvent>
     <bpmn:sequenceFlow id="SequenceFlow_1jdocur" name="" sourceRef="StartEvent_1mox3jl" targetRef="ExclusiveGateway_0fi1ct7" />
     <bpmn:sequenceFlow id="SequenceFlow_13qn2l4" sourceRef="StartEvent_1mox3jl" targetRef="ExclusiveGateway_0fi1ct7" />
-    <bpmn:sequenceFlow id="SequenceFlow_1g8yhyu" sourceRef="ExclusiveGateway_0fi1ct7" targetRef="Task_1sy1ibw">
+    <bpmn:sequenceFlow id="SequenceFlow_1g8yhyu" sourceRef="ExclusiveGateway_0fi1ct7" targetRef="ServiceTask_1">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">token.history.StartEvent_1mox3jl.user_task === false</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
-    <bpmn:sequenceFlow id="SequenceFlow_0szygwm" name="" sourceRef="ExclusiveGateway_0fi1ct7" targetRef="Task_0julnc5">
+    <bpmn:sequenceFlow id="SequenceFlow_0szygwm" name="" sourceRef="ExclusiveGateway_0fi1ct7" targetRef="UserTask_1">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">token.history.StartEvent_1mox3jl.user_task === true</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
-    <bpmn:sequenceFlow id="SequenceFlow_17fbkvc" sourceRef="Task_0julnc5" targetRef="Task_04fbo5q" />
-    <bpmn:sequenceFlow id="SequenceFlow_027yae2" sourceRef="Task_04fbo5q" targetRef="ExclusiveGateway_134ybqm" />
+    <bpmn:sequenceFlow id="SequenceFlow_17fbkvc" sourceRef="UserTask_1" targetRef="ScriptTask_1" />
+    <bpmn:sequenceFlow id="SequenceFlow_027yae2" sourceRef="ScriptTask_1" targetRef="ExclusiveGateway_134ybqm" />
     <bpmn:sequenceFlow id="SequenceFlow_0nqcs3t" sourceRef="ExclusiveGateway_134ybqm" targetRef="EndEvent_0eie6q6" />
     <bpmn:endEvent id="EndEvent_0eie6q6" name="Sample finished">
       <bpmn:incoming>SequenceFlow_0nqcs3t</bpmn:incoming>
     </bpmn:endEvent>
-    <bpmn:sequenceFlow id="SequenceFlow_1ejes54" sourceRef="Task_1sy1ibw" targetRef="ExclusiveGateway_134ybqm" />
-    <bpmn:sequenceFlow id="SequenceFlow_0hyiptz" sourceRef="ExclusiveGateway_0fi1ct7" targetRef="Task_1sy1ibw" />
-    <bpmn:userTask id="Task_0julnc5" name="Task 2" camunda:formKey="Form Key">
+    <bpmn:sequenceFlow id="SequenceFlow_1ejes54" sourceRef="ServiceTask_1" targetRef="ExclusiveGateway_134ybqm" />
+    <bpmn:sequenceFlow id="SequenceFlow_0hyiptz" sourceRef="ExclusiveGateway_0fi1ct7" targetRef="ServiceTask_1" />
+    <bpmn:userTask id="UserTask_1" name="Task 2" camunda:formKey="Form Key">
       <bpmn:extensionElements>
         <camunda:formData />
       </bpmn:extensionElements>
       <bpmn:incoming>SequenceFlow_0szygwm</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_17fbkvc</bpmn:outgoing>
     </bpmn:userTask>
-    <bpmn:serviceTask id="Task_1sy1ibw" name="Task 1">
+    <bpmn:serviceTask id="ServiceTask_1" name="Task 1">
       <bpmn:incoming>SequenceFlow_1g8yhyu</bpmn:incoming>
       <bpmn:incoming>SequenceFlow_0hyiptz</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_1ejes54</bpmn:outgoing>
     </bpmn:serviceTask>
-    <bpmn:scriptTask id="Task_04fbo5q" name="Task 3">
+    <bpmn:scriptTask id="ScriptTask_1" name="Task 3">
       <bpmn:extensionElements>
         <camunda:formData />
       </bpmn:extensionElements>
@@ -70,9 +70,9 @@
       <bpmn:incoming>SequenceFlow_1ejes54</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_0nqcs3t</bpmn:outgoing>
     </bpmn:exclusiveGateway>
-    <bpmn:association id="Association_0h60rgi" sourceRef="Task_04fbo5q" targetRef="TextAnnotation_0nuu0fl" />
-    <bpmn:association id="Association_13hg298" sourceRef="Task_0julnc5" targetRef="TextAnnotation_0n7oyg3" />
-    <bpmn:association id="Association_0c0pgpe" sourceRef="Task_1sy1ibw" targetRef="TextAnnotation_0jnw6m2" />
+    <bpmn:association id="Association_0h60rgi" sourceRef="ScriptTask_1" targetRef="TextAnnotation_0nuu0fl" />
+    <bpmn:association id="Association_13hg298" sourceRef="UserTask_1" targetRef="TextAnnotation_0n7oyg3" />
+    <bpmn:association id="Association_0c0pgpe" sourceRef="ServiceTask_1" targetRef="TextAnnotation_0jnw6m2" />
     <bpmn:textAnnotation id="TextAnnotation_0nuu0fl">
       <bpmn:text>RT: 00:00:10</bpmn:text>
     </bpmn:textAnnotation>
@@ -140,13 +140,13 @@
         <di:waypoint x="520" y="87" />
         <di:waypoint x="572" y="87" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNShape id="ServiceTask_0eku01y_di" bpmnElement="Task_1sy1ibw">
+      <bpmndi:BPMNShape id="ServiceTask_0eku01y_di" bpmnElement="ServiceTask_1">
         <dc:Bounds x="420" y="47" width="100" height="80" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="UserTask_18wi3a9_di" bpmnElement="Task_0julnc5">
+      <bpmndi:BPMNShape id="UserTask_18wi3a9_di" bpmnElement="UserTask_1">
         <dc:Bounds x="268" y="157" width="100" height="80" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="ScriptTask_18ldsap_di" bpmnElement="Task_04fbo5q">
+      <bpmndi:BPMNShape id="ScriptTask_18ldsap_di" bpmnElement="ScriptTask_1">
         <dc:Bounds x="420" y="157" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="TextAnnotation_0nuu0fl_di" bpmnElement="TextAnnotation_0nuu0fl">
