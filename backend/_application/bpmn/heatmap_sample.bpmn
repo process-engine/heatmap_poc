@@ -6,7 +6,7 @@
     </bpmn:extensionElements>
     <bpmn:participant id="Participant_0px403d" name="heatmap_sample" processRef="heatmap_sample" />
   </bpmn:collaboration>
-  <bpmn:process id="heatmap_sample" name="heatmap_sample" isExecutable="false">
+  <bpmn:process id="heatmap_sample" name="heatmap_sample" isExecutable="true">
     <bpmn:laneSet>
       <bpmn:lane id="Lane_1xzf0d3" name="">
         <bpmn:flowNodeRef>StartEvent_1mox3jl</bpmn:flowNodeRef>
