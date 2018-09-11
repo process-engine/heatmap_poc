@@ -6,7 +6,7 @@ function registerInContainer(container) {
 
   container
     .register('KpiApiService', KpiApiService)
-    .dependencies('IamService', 'FlowNodeInstanceRepository', 'LoggingRepository')
+    .dependencies('FlowNodeInstanceRepository', 'IamService')
     .singleton();
 }
 

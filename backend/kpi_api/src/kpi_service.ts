@@ -1,5 +1,4 @@
 import {ActiveToken, FlowNodeRuntimeInformation, IKpiApiService} from '@process-engine/kpi_api_contracts';
-import {ILoggingRepository} from '@process-engine/logging_api_contracts';
 import {IFlowNodeInstanceRepository, Runtime} from '@process-engine/process_engine_contracts';
 
 import {IIAMService, IIdentity} from '@essential-projects/iam_contracts';
@@ -10,14 +9,12 @@ type GroupedFlowNodeInstances = {
 
 export class KpiApiService implements IKpiApiService {
 
-  private _loggingRepository: ILoggingRepository;
   private _iamService: IIAMService;
   private _flowNodeInstanceRepository: IFlowNodeInstanceRepository;
 
-  constructor(flowNodeInstanceRepository: IFlowNodeInstanceRepository, iamService: IIAMService, loggingRepository: ILoggingRepository) {
+  constructor(flowNodeInstanceRepository: IFlowNodeInstanceRepository, iamService: IIAMService) {
     this._flowNodeInstanceRepository = flowNodeInstanceRepository;
     this._iamService = iamService;
-    this._loggingRepository = loggingRepository;
   }
 
   private get flowNodeInstanceRepository(): IFlowNodeInstanceRepository {
@@ -28,13 +25,8 @@ export class KpiApiService implements IKpiApiService {
     return this._iamService;
   }
 
-  private get loggingRepository(): ILoggingRepository {
-    return this._loggingRepository;
-  }
-
   public async getRuntimeInformationForProcessModel(identity: IIdentity, processModelId: string): Promise<Array<FlowNodeRuntimeInformation>> {
 
-    // TODO: Use logging repository
     const flowNodeInstances: Array<Runtime.Types.FlowNodeInstance> = await this.flowNodeInstanceRepository.queryByProcessModel(processModelId);
 
     const groupedFlowNodeInstances: GroupedFlowNodeInstances = this._groupFlowNodeInstancesByFlowNodeId(flowNodeInstances);
@@ -53,7 +45,6 @@ export class KpiApiService implements IKpiApiService {
                                                 processModelId: string,
                                                 flowNodeId: string): Promise<FlowNodeRuntimeInformation> {
 
-    // TODO: Use logging repository
     const flowNodeInstances: Array<Runtime.Types.FlowNodeInstance> = await this.flowNodeInstanceRepository.queryByProcessModel(processModelId);
 
     const matchingFlowNodeInstances: Array<Runtime.Types.FlowNodeInstance> =
@@ -69,15 +60,24 @@ export class KpiApiService implements IKpiApiService {
 
   public async getActiveTokensForProcessModel(identity: IIdentity, processModelId: string): Promise<Array<ActiveToken>> {
 
-    // TODO: Add flowNodeInstanceRepository.queryActiveTokensByProcessModelId
-    return Promise.resolve([]);
+    const flowNodeInstances: Array<Runtime.Types.FlowNodeInstance> = await this.flowNodeInstanceRepository.queryByProcessModel(processModelId);
 
+    const activeFlowNodeInstances: Array<Runtime.Types.FlowNodeInstance> = flowNodeInstances.filter(this._isFlowNodeInstanceActive);
+
+    const activeTokenInfos: Array<ActiveToken> = activeFlowNodeInstances.map(this._createActiveTokenInfoForFlowNodeInstance);
+
+    return activeTokenInfos;
   }
 
   public async getActiveTokensForFlowNode(identity: IIdentity, flowNodeId: string): Promise<Array<ActiveToken>> {
-    // TODO: Add flowNodeInstanceRepository.queryActiveTokensByFlowNodeId
-    return Promise.resolve([]);
 
+    const flowNodeInstances: Array<Runtime.Types.FlowNodeInstance> = await this.flowNodeInstanceRepository.queryByFlowNodeId(flowNodeId);
+
+    const activeFlowNodeInstances: Array<Runtime.Types.FlowNodeInstance> = flowNodeInstances.filter(this._isFlowNodeInstanceActive);
+
+    const activeTokenInfos: Array<ActiveToken> = activeFlowNodeInstances.map(this._createActiveTokenInfoForFlowNodeInstance);
+
+    return activeTokenInfos;
   }
 
   private _groupFlowNodeInstancesByFlowNodeId(flowNodeInstances: Array<Runtime.Types.FlowNodeInstance>): GroupedFlowNodeInstances {
@@ -108,5 +108,28 @@ export class KpiApiService implements IKpiApiService {
     runtimeInformation.processModelId = flowNodeInstances[0].tokens[0].processModelId;
 
     return runtimeInformation;
+  }
+
+  private _isFlowNodeInstanceActive(flowNodeInstance: Runtime.Types.FlowNodeInstance): boolean {
+    return flowNodeInstance.state === Runtime.Types.FlowNodeInstanceState.running
+      || flowNodeInstance.state === Runtime.Types.FlowNodeInstanceState.suspended;
+  }
+
+  private _createActiveTokenInfoForFlowNodeInstance(flowNodeInstance: Runtime.Types.FlowNodeInstance): ActiveToken {
+
+    const currentProcessToken: Runtime.Types.ProcessToken = flowNodeInstance.tokens[0];
+
+    const activeTokenInfo: ActiveToken = new ActiveToken();
+    activeTokenInfo.processInstanceId = currentProcessToken.processInstanceId;
+    activeTokenInfo.processModelId = currentProcessToken.processModelId;
+    activeTokenInfo.correlationId = currentProcessToken.correlationId;
+    activeTokenInfo.flowNodeId = flowNodeInstance.flowNodeId;
+    activeTokenInfo.flowNodeInstanceId = flowNodeInstance.id;
+    activeTokenInfo.identity = currentProcessToken.identity;
+    activeTokenInfo.createdAt = currentProcessToken.createdAt;
+    activeTokenInfo.payload = currentProcessToken.payload;
+
+    return activeTokenInfo;
+
   }
 }
