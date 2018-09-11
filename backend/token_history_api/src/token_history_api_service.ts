@@ -28,13 +28,21 @@ export class TokenHistoryApiService implements ITokenHistoryApiService {
                                     processModelId: string,
                                     flowNodeId: string): Promise<Array<TokenHistoryEntry>> {
 
-    const flowNodeInstance: Runtime.Types.FlowNodeInstance = await this.flowNodeInstanceRepository.queryByFlowNodeId(flowNodeId);
+    // TODO: Add a queryBy function to the repository, which allows to query FlowNodeInstances by correlation, processModelId and flowNodeId.
+    const flowNodeInstances: Array<Runtime.Types.FlowNodeInstance> = await this.flowNodeInstanceRepository.queryByCorrelation(correlationId);
 
-    const tokenHistory: Array<TokenHistoryEntry> = flowNodeInstance.tokens.map((fniToken: Runtime.Types.ProcessToken): TokenHistoryEntry => {
+    const matchingFlowNodeInstance: Runtime.Types.FlowNodeInstance = flowNodeInstances.find((entry: Runtime.Types.FlowNodeInstance): boolean => {
+
+      // Note that processModelId will be the same for every token, so it is sufficient to just check the first.
+      return entry.flowNodeId === flowNodeId &&
+             entry.tokens[0].processModelId === processModelId;
+    });
+
+    const tokenHistory: Array<TokenHistoryEntry> = matchingFlowNodeInstance.tokens.map((fniToken: Runtime.Types.ProcessToken): TokenHistoryEntry => {
 
       const tokenHistoryEntry: TokenHistoryEntry = new TokenHistoryEntry();
-      tokenHistoryEntry.flowNodeId = flowNodeInstance.flowNodeId;
-      tokenHistoryEntry.flowNodeInstanceId = flowNodeInstance.id;
+      tokenHistoryEntry.flowNodeId = matchingFlowNodeInstance.flowNodeId;
+      tokenHistoryEntry.flowNodeInstanceId = matchingFlowNodeInstance.id;
       tokenHistoryEntry.processInstanceId = fniToken.processInstanceId;
       tokenHistoryEntry.processModelId = fniToken.processModelId;
       tokenHistoryEntry.correlationId = fniToken.correlationId;
