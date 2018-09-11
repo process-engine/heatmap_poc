@@ -55,7 +55,7 @@ describe('Logging API Tests - ', () => {
   async function assertProcessModelLogs(logEntries) {
 
     should(logEntries).be.an.Array();
-    should(logEntries.length).be.equal(12);
+    should(logEntries.length).be.equal(14);
 
     const expectedLogMessages = [
       /Process started/i,
@@ -87,7 +87,7 @@ describe('Logging API Tests - ', () => {
   async function assertFlowNodeInstanceLogs(logEntries) {
 
     should(logEntries).be.an.Array();
-    should(logEntries.length).be.equal(12);
+    should(logEntries.length).be.equal(14);
 
     const expectedLogMessageTypes = [
       /FNI Entered/i,
@@ -97,6 +97,7 @@ describe('Logging API Tests - ', () => {
     const expectedFlowNodeEntries = [
       'StartEvent_1mox3jl',
       'ExclusiveGateway_0fi1ct7',
+      'ScriptTask_1',
       'ServiceTask_1',
       'ExclusiveGateway_134ybqm',
       'EndEvent_0eie6q6',

@@ -38,6 +38,7 @@ describe('Metric API Tests - ', () => {
     const expectedFlowNodeNames = [
       'StartEvent_1mox3jl',
       'ExclusiveGateway_0fi1ct7',
+      'ScriptTask_1',
       'ServiceTask_1',
       'ExclusiveGateway_134ybqm',
       'EndEvent_0eie6q6',

@@ -5,7 +5,7 @@ const uuid = require('uuid');
 const TestFixtureProvider = require('../dist/commonjs').TestFixtureProvider;
 const ProcessInstanceHandler = require('../dist/commonjs').ProcessInstanceHandler;
 
-describe.only('KPI API -> Get Active Tokens - ', () => {
+describe('KPI API -> Get Active Tokens - ', () => {
 
   let processInstanceHandler;
   let testFixtureProvider;
@@ -14,7 +14,9 @@ describe.only('KPI API -> Get Active Tokens - ', () => {
 
   const processModelId = 'heatmap_sample';
   const correlationId = uuid.v4();
-  const userTaskId = 'UserTask_1';
+
+  const userTask1Id = 'UserTask_1';
+  const userTask2Id = 'UserTask_2';
 
   const dummyIdentity = {
     token: 'defaultUser',
@@ -34,7 +36,8 @@ describe.only('KPI API -> Get Active Tokens - ', () => {
   });
 
   after(async () => {
-    await finishUserTask();
+    await finishUserTask(userTask1Id);
+    await finishUserTask(userTask2Id);
     await testFixtureProvider.tearDown();
   });
 
@@ -43,23 +46,23 @@ describe.only('KPI API -> Get Active Tokens - ', () => {
     const activeTokens = await kpiApiService.getActiveTokensForProcessModel(dummyIdentity, processModelId);
 
     should(activeTokens).be.an.Array();
-    should(activeTokens.length).be.equal(1);
+    should(activeTokens.length).be.equal(2); // 2 UserTasks and 1 Parallel Split Gateway
 
-    const activeToken = activeTokens[0];
-
-    assertActiveToken(activeToken);
+    for (const activeToken of activeTokens) {
+      assertActiveToken(activeToken, activeToken.flowNodeId);
+    }
   });
 
   it('should successfully get the active tokens for a running FlowNodeInstance', async () => {
 
-    const activeTokens = await kpiApiService.getActiveTokensForFlowNode(dummyIdentity, userTaskId);
+    const activeTokens = await kpiApiService.getActiveTokensForFlowNode(dummyIdentity, userTask1Id);
 
     should(activeTokens).be.an.Array();
     should(activeTokens.length).be.equal(1);
 
     const activeToken = activeTokens[0];
 
-    assertActiveToken(activeToken);
+    assertActiveToken(activeToken, userTask1Id);
   });
 
   it('should not include tokens from already finished ProcessModels with the same ID', async () => {
@@ -71,11 +74,11 @@ describe.only('KPI API -> Get Active Tokens - ', () => {
     const activeTokens = await kpiApiService.getActiveTokensForProcessModel(dummyIdentity, processModelId);
 
     should(activeTokens).be.an.Array();
-    should(activeTokens.length).be.equal(1);
+    should(activeTokens.length).be.equal(2); // 2 UserTasks and 1 Parallel Split Gateway
 
-    const activeToken = activeTokens[0];
-
-    assertActiveToken(activeToken);
+    for (const activeToken of activeTokens) {
+      assertActiveToken(activeToken, activeToken.flowNodeId);
+    }
   });
 
   it('should not include tokens from already finished FlowNodeInstances with the same ID', async () => {
@@ -84,14 +87,14 @@ describe.only('KPI API -> Get Active Tokens - ', () => {
     // The tokens of this ProcessInstance should not show as ActiveTokens.
     await executeSampleProcess();
 
-    const activeTokens = await kpiApiService.getActiveTokensForFlowNode(dummyIdentity, userTaskId);
+    const activeTokens = await kpiApiService.getActiveTokensForFlowNode(dummyIdentity, userTask1Id);
 
     should(activeTokens).be.an.Array();
     should(activeTokens.length).be.equal(1);
 
     const activeToken = activeTokens[0];
 
-    assertActiveToken(activeToken);
+    assertActiveToken(activeToken, userTask1Id);
   });
 
   async function executeSampleProcess() {
@@ -114,7 +117,7 @@ describe.only('KPI API -> Get Active Tokens - ', () => {
     await processInstanceHandler.waitForCorrelationToReachUserTask(correlationId);
   }
 
-  async function finishUserTask() {
+  async function finishUserTask(userTaskId) {
 
     const userTaskResult = {};
 
@@ -123,7 +126,7 @@ describe.only('KPI API -> Get Active Tokens - ', () => {
       .finishUserTask(testFixtureProvider.consumerContext, processModelId, correlationId, userTaskId, userTaskResult);
   }
 
-  function assertActiveToken(activeToken) {
+  function assertActiveToken(activeToken, flowNodeId) {
 
     const expectedPayload = {
       user_task: true,
@@ -131,7 +134,7 @@ describe.only('KPI API -> Get Active Tokens - ', () => {
 
     should(activeToken.correlationId).be.equal(correlationId);
     should(activeToken.processModelId).be.equal(processModelId);
-    should(activeToken.flowNodeId).be.equal(userTaskId);
+    should(activeToken.flowNodeId).be.equal(flowNodeId);
     should(activeToken.identity).be.eql(dummyIdentity);
     should(activeToken.payload).be.eql(expectedPayload);
 
