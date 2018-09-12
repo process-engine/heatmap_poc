@@ -1,3 +1,5 @@
+import * as moment from 'moment';
+
 import {ActiveToken, FlowNodeRuntimeInformation, IKpiApiService} from '@process-engine/kpi_api_contracts';
 import {IFlowNodeInstanceRepository, Runtime} from '@process-engine/process_engine_contracts';
 
@@ -29,7 +31,14 @@ export class KpiApiService implements IKpiApiService {
 
     const flowNodeInstances: Array<Runtime.Types.FlowNodeInstance> = await this.flowNodeInstanceRepository.queryByProcessModel(processModelId);
 
-    const groupedFlowNodeInstances: GroupedFlowNodeInstances = this._groupFlowNodeInstancesByFlowNodeId(flowNodeInstances);
+    // Do not include FlowNode instances which are still being executed,
+    // since they do net yet have a final runtime.
+    const filteredFlowNodeInstances: Array<Runtime.Types.FlowNodeInstance> =
+      flowNodeInstances.filter((flowNodeInstance: Runtime.Types.FlowNodeInstance) => {
+        return !this._isFlowNodeInstanceActive(flowNodeInstance);
+      });
+
+    const groupedFlowNodeInstances: GroupedFlowNodeInstances = this._groupFlowNodeInstancesByFlowNodeId(filteredFlowNodeInstances);
 
     const groupKeys: Array<string> = Object.keys(groupedFlowNodeInstances);
 
@@ -47,7 +56,14 @@ export class KpiApiService implements IKpiApiService {
 
     const flowNodeInstances: Array<Runtime.Types.FlowNodeInstance> = await this.flowNodeInstanceRepository.queryByFlowNodeId(flowNodeId);
 
-    const flowNodeRuntimeInformation: FlowNodeRuntimeInformation = this._createFlowNodeRuntimeInformation(flowNodeId, flowNodeInstances);
+    // Do not include FlowNode instances which are still being executed,
+    // since they do net yet have a final runtime.
+    const filteredFlowNodeInstances: Array<Runtime.Types.FlowNodeInstance> =
+      flowNodeInstances.filter((flowNodeInstance: Runtime.Types.FlowNodeInstance) => {
+        return !this._isFlowNodeInstanceActive(flowNodeInstance);
+      });
+
+    const flowNodeRuntimeInformation: FlowNodeRuntimeInformation = this._createFlowNodeRuntimeInformation(flowNodeId, filteredFlowNodeInstances);
 
     return flowNodeRuntimeInformation;
   }
@@ -110,12 +126,67 @@ export class KpiApiService implements IKpiApiService {
                                             flowNodeInstances: Array<Runtime.Types.FlowNodeInstance>,
                                            ): FlowNodeRuntimeInformation {
 
-    // WIP
+    const runtimes: Array<number> = flowNodeInstances.map(this._calculateRuntimeForFlowNodeInstance);
+
     const runtimeInformation: FlowNodeRuntimeInformation = new FlowNodeRuntimeInformation();
     runtimeInformation.flowNodeId = flowNodeId;
     runtimeInformation.processModelId = flowNodeInstances[0].tokens[0].processModelId;
+    runtimeInformation.minRuntimeInMs = Math.min(...runtimes);
+    runtimeInformation.maxRuntimeInMs = Math.max(...runtimes);
+    runtimeInformation.arithmeticMeanRuntimeInMs = this._calculateFlowNodeArithmeticMeanRuntime(runtimes);
+    runtimeInformation.firstQuartileRuntimeInMs = 0;
+    runtimeInformation.medianRuntimeInMs = 0;
+    runtimeInformation.thirdQuartileRuntimeInMs = 0;
 
     return runtimeInformation;
+  }
+
+  /**
+   * Calculates the total runtime of a FlowNodeInstance by comparing the
+   * TimeStamp on the onEnter-Token with the one on the onExit-Token.
+   *
+   * @param   flowNodeInstance The FlowNodeInstance for which to calculate the
+   *                           runtime
+   * @returns                  The calculated runtime.
+   */
+  private _calculateRuntimeForFlowNodeInstance(flowNodeInstance: Runtime.Types.FlowNodeInstance): number {
+
+    const onEnterToken: Runtime.Types.ProcessToken =
+      flowNodeInstance.tokens.find((token: Runtime.Types.ProcessToken): boolean => {
+        return token.type === Runtime.Types.ProcessTokenType.onEnter ;
+      });
+
+    const onExitToken: Runtime.Types.ProcessToken =
+      flowNodeInstance.tokens.find((token: Runtime.Types.ProcessToken): boolean => {
+        return token.type === Runtime.Types.ProcessTokenType.onExit ;
+      });
+
+    const startTime: moment.Moment = moment(onEnterToken.createdAt);
+    const endTime: moment.Moment = moment(onExitToken.createdAt);
+
+    const runtimeDiff: number = endTime.diff(startTime);
+    const runtimeTotal: number = moment
+      .duration(runtimeDiff)
+      .asMilliseconds();
+
+    return runtimeTotal;
+  }
+
+  /**
+   * Calculates the arithmetic mean runtime from the given set of runtimes.
+   *
+   * @param   runtimes The set of runtimes.
+   * @returns          The calculated mean runtime.
+   */
+  private _calculateFlowNodeArithmeticMeanRuntime(runtimes: Array<number>): number {
+
+    const allRuntimes: number = runtimes.reduce((previousValue: number, currentValue: number) => {
+      return previousValue + currentValue;
+    }, 0);
+
+    const meanRuntime: number = allRuntimes / runtimes.length;
+
+    return meanRuntime;
   }
 
   /**
