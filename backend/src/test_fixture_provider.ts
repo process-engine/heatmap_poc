@@ -33,11 +33,11 @@ const iocModuleNames: Array<string> = [
   '@process-engine/deployment_api_core',
   '@process-engine/deployment_api_http',
   '@process-engine/flow_node_instance.repository.sequelize',
-  '@process-engine/heatmap_poc_kpi_api',
-  '@process-engine/heatmap_poc_logging_api',
-  '@process-engine/heatmap_poc_logging.repository.file_system',
-  '@process-engine/heatmap_poc_metrics_api',
-  '@process-engine/heatmap_poc_token_history_api',
+  '@process-engine/kpi_api_core',
+  '@process-engine/logging_api_core',
+  '@process-engine/logging.repository.file_system',
+  '@process-engine/metrics_api_core',
+  '@process-engine/token_history_api_core',
   '@process-engine/iam',
   '@process-engine/management_api_core',
   '@process-engine/management_api_http',
@@ -142,11 +142,6 @@ export class TestFixtureProvider {
 
     const bpmnDirectoryName: string = 'bpmn';
     let rootDirPath: string = process.cwd();
-    const integrationTestDirName: string = '_application';
-
-    if (!rootDirPath.endsWith(integrationTestDirName)) {
-      rootDirPath = path.join(rootDirPath, integrationTestDirName);
-    }
 
     return path.join(rootDirPath, bpmnDirectoryName);
   }

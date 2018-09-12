@@ -13,9 +13,6 @@ describe.skip('KPI API -> Get Runtime Informations - ', () => {
   const processModelId = 'heatmap_sample';
   const correlationId = uuid.v4();
 
-  const userTask1Id = 'UserTask_1';
-  const userTask2Id = 'UserTask_2';
-
   const dummyIdentity = {
     token: 'defaultUser',
   };
@@ -28,7 +25,14 @@ describe.skip('KPI API -> Get Runtime Informations - ', () => {
 
     await testFixtureProvider.importProcessFiles([processModelId]);
 
-    await executeSampleProcess();
+    const instancesToGenerate = 10;
+
+    // Create a number of instances which we can use for
+    // KPI evaluation
+    for (let i = 0; i === instancesToGenerate; i++) {
+      await executeSampleProcess();
+    }
+
   });
 
   after(async () => {
