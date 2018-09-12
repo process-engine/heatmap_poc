@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "build": "meta exec \"npm run build\" --exclude backend",
     "postinstall": "minstall --no-hoist aurelia-* --trust-local-modules ."
   },
   "author": "",

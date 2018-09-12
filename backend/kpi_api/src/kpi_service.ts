@@ -45,15 +45,9 @@ export class KpiApiService implements IKpiApiService {
                                                 processModelId: string,
                                                 flowNodeId: string): Promise<FlowNodeRuntimeInformation> {
 
-    const flowNodeInstances: Array<Runtime.Types.FlowNodeInstance> = await this.flowNodeInstanceRepository.queryByProcessModel(processModelId);
+    const flowNodeInstances: Array<Runtime.Types.FlowNodeInstance> = await this.flowNodeInstanceRepository.queryByFlowNodeId(flowNodeId);
 
-    const matchingFlowNodeInstances: Array<Runtime.Types.FlowNodeInstance> =
-      flowNodeInstances.filter((flowNodeInstance: Runtime.Types.FlowNodeInstance): boolean => {
-
-        return flowNodeInstance.flowNodeId === flowNodeId;
-      });
-
-    const flowNodeRuntimeInformation: FlowNodeRuntimeInformation = this._createFlowNodeRuntimeInformation(flowNodeId, matchingFlowNodeInstances);
+    const flowNodeRuntimeInformation: FlowNodeRuntimeInformation = this._createFlowNodeRuntimeInformation(flowNodeId, flowNodeInstances);
 
     return flowNodeRuntimeInformation;
   }
@@ -80,6 +74,12 @@ export class KpiApiService implements IKpiApiService {
     return activeTokenInfos;
   }
 
+  /**
+   * Takes a list of FlowNodeInstances and groups them by their FlowNodeId.
+   *
+   * @param   flowNodeInstances The FlowNodeInstances to group.
+   * @returns                   The grouped FlowNodeInstances.
+   */
   private _groupFlowNodeInstancesByFlowNodeId(flowNodeInstances: Array<Runtime.Types.FlowNodeInstance>): GroupedFlowNodeInstances {
 
     const groupedFlowNodeInstances: GroupedFlowNodeInstances = {};
@@ -98,6 +98,14 @@ export class KpiApiService implements IKpiApiService {
     return groupedFlowNodeInstances;
   }
 
+  /**
+   * Takes an Array of FlowNodeInstances and evaluates their runtimes.
+   * The results will be placed in a FlowNodeRuntimeInformation object.
+   *
+   * @param   flowNodeId        The ID of the FlowNode to evaluate.
+   * @param   flowNodeInstances The list of instances to evaluate.
+   * @returns                   The FlowNodeRuntimeInformation for the FlowNode.
+   */
   private _createFlowNodeRuntimeInformation(flowNodeId: string,
                                             flowNodeInstances: Array<Runtime.Types.FlowNodeInstance>,
                                            ): FlowNodeRuntimeInformation {
@@ -110,11 +118,23 @@ export class KpiApiService implements IKpiApiService {
     return runtimeInformation;
   }
 
+  /**
+   * Checks if a given FlowNode instance is currently in an active state.
+   *
+   * @param   flowNodeInstance The FlowNode for which to determine the state.
+   * @returns                  True, if the instance is active, otherwise false.
+   */
   private _isFlowNodeInstanceActive(flowNodeInstance: Runtime.Types.FlowNodeInstance): boolean {
     return flowNodeInstance.state === Runtime.Types.FlowNodeInstanceState.running
       || flowNodeInstance.state === Runtime.Types.FlowNodeInstanceState.suspended;
   }
 
+  /**
+   * Converts the given FlowNodeInstance object into an ActiveToken object.
+   *
+   * @param   flowNodeInstance The FlowNodeInstance to convert.
+   * @returns                  The created ActiveToken.
+   */
   private _createActiveTokenInfoForFlowNodeInstance(flowNodeInstance: Runtime.Types.FlowNodeInstance): ActiveToken {
 
     const currentProcessToken: Runtime.Types.ProcessToken = flowNodeInstance.tokens[0];
@@ -130,6 +150,5 @@ export class KpiApiService implements IKpiApiService {
     activeTokenInfo.payload = currentProcessToken.payload;
 
     return activeTokenInfo;
-
   }
 }
