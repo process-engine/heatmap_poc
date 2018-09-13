@@ -1,5 +1,6 @@
 # Logs
 logs
+metrics
 *.log
 npm-debug.log*
 !logs/sample_correlation/heatmap_sample.log
