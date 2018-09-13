@@ -11,8 +11,7 @@ describe('Logging API Tests - ', () => {
   let loggingApiService;
 
   const processModelId = 'heatmap_sample';
-  const correlationId = uuid.v4();
-  const startEventId = 'StartEvent_1mox3jl';
+  const correlationId = 'sample_correlation';
 
   const dummyIdentity = {
     token: 'defaultUser',
@@ -25,7 +24,6 @@ describe('Logging API Tests - ', () => {
     loggingApiService = await testFixtureProvider.resolveAsync('LoggingApiService');
 
     await testFixtureProvider.importProcessFiles([processModelId]);
-    await executeSampleProcess();
   });
 
   after(async () => {
@@ -128,14 +126,5 @@ describe('Logging API Tests - ', () => {
         should(matchingLogEntry).have.property('timeStamp');
       }
     }
-  }
-
-  async function executeSampleProcess() {
-
-    const initialToken = {
-      user_task: false,
-    };
-
-    await testFixtureProvider.executeProcess(processModelId, startEventId, correlationId, initialToken);
   }
 });

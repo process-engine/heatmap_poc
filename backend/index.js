@@ -21,6 +21,7 @@ const iocModuleNames = [
   '@process-engine/logging_api_core',
   '@process-engine/logging.repository.file_system',
   '@process-engine/metrics_api_core',
+  '@process-engine/metrics.repository.file_system',
   '@process-engine/token_history_api_core',
   '@process-engine/iam',
   '@process-engine/management_api_core',
