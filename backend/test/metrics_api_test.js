@@ -14,7 +14,7 @@ describe('Metric API Tests - ', () => {
   const correlationId = uuid.v4();
   const startEventId = 'StartEvent_1mox3jl';
 
-  const expectedLogFilePath = path.join('logs', correlationId, processModelId);
+  const expectedLogFilePath = path.join('metrics', `${processModelId}.met`);
 
   before(async () => {
     testFixtureProvider = new TestFixtureProvider();
@@ -42,8 +42,8 @@ describe('Metric API Tests - ', () => {
   it('should write entries for each stage of the ProcessModels execution', () => {
     const logEntries = readLogFileContent(expectedLogFilePath);
 
-    const expectedLogEntryForProcessStarted = /heatmap_sample.*?info.*?process.*?started/i;
-    const expectedLogEntryForProcessFinished = /heatmap_sample.*?info.*?process.*?finished/i;
+    const expectedLogEntryForProcessStarted = /heatmap_sample.*?onProcessStart/i;
+    const expectedLogEntryForProcessFinished = /heatmap_sample.*?onProcessFinish/i;
 
     const processStartWasMeasured = logEntries.some((entry) => {
       return entry.match(expectedLogEntryForProcessStarted);
@@ -61,8 +61,8 @@ describe('Metric API Tests - ', () => {
     const logEntries = readLogFileContent(expectedLogFilePath);
 
     const expectedLogMessages = [
-      'FNI Entered',
-      'FNI Exited',
+      'onFlowNodeEnter',
+      'onFlowNodeExit',
     ];
 
     const expectedFlowNodeEntries = [
@@ -77,7 +77,7 @@ describe('Metric API Tests - ', () => {
     for (const flowNodeName of expectedFlowNodeEntries) {
       for (const message of expectedLogMessages) {
 
-        const expectedLogEntry = new RegExp(`heatmap_sample.*?${flowNodeName}.*?info.*?${message}`, 'i');
+        const expectedLogEntry = new RegExp(`heatmap_sample.*?${flowNodeName}.*?${message}`, 'i');
 
         const logHasMatchingEntry = logEntries.some((entry) => {
           return entry.match(expectedLogEntry);
