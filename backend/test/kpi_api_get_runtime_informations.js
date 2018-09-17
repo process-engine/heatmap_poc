@@ -3,7 +3,7 @@
 const should = require('should');
 const TestFixtureProvider = require('../dist/commonjs').TestFixtureProvider;
 
-describe.only('KPI API -> Get Runtime Informations - ', () => {
+describe('KPI API -> Get Runtime Informations - ', () => {
 
   let testFixtureProvider;
 
@@ -30,7 +30,7 @@ describe.only('KPI API -> Get Runtime Informations - ', () => {
     const runtimeInfos = await kpiApiService.getRuntimeInformationForProcessModel(dummyIdentity, processModelId);
 
     should(runtimeInfos).be.an.Array();
-    should(runtimeInfos.length).be.equal(6, `Expected 6 runtime informations, but got ${runtimeInfos.length}.`);
+    should(runtimeInfos.length).be.equal(10, `Expected 10 runtime informations, but got ${runtimeInfos.length}.`);
 
     const expectedFlowNodeIds = [
       'StartEvent_1mox3jl',
@@ -38,6 +38,10 @@ describe.only('KPI API -> Get Runtime Informations - ', () => {
       'ScriptTask_1',
       'ServiceTask_1',
       'ExclusiveGateway_134ybqm',
+      'ParallelSplitGateway_1',
+      'ParallelJoinGateway_1',
+      'UserTask_1',
+      'UserTask_2',
       'EndEvent_0eie6q6',
     ];
 
@@ -59,17 +63,17 @@ describe.only('KPI API -> Get Runtime Informations - ', () => {
   });
 
   it('should successfully get the runtime information for a FlowNode', async () => {
-    const flowNodeToQuery = 'ServiceTask_1';
+    const flowNodeToQuery = 'UserTask_1';
     const runtimeInfo = await kpiApiService.getRuntimeInformationForFlowNode(dummyIdentity, processModelId, flowNodeToQuery);
 
     should(runtimeInfo).not.be.an.Array();
     should(runtimeInfo.constructor.name).be.equal('FlowNodeRuntimeInformation');
 
-    const expectedFlowNodeId = 'ServiceTask_1';
+    const expectedFlowNodeId = 'UserTask_1';
     const expectedProcessModelId = 'kpi_api_test_data';
-    const expectedMinRuntimeInMs = 10;
-    const expectedMaxRuntimeInMs = 15;
-    const expectedArithmeticMeanRuntimeInMs = 13;
+    const expectedMinRuntimeInMs = 793;
+    const expectedMaxRuntimeInMs = 827;
+    const expectedArithmeticMeanRuntimeInMs = 812;
     const expectedFirstQuartileRuntimeInMs = 0;
     const expectedMedianRuntimeInMs = 0;
     const expectedThirdQuartileRuntimeInMs = 0;
