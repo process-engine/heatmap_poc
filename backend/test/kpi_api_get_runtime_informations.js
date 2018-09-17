@@ -63,7 +63,7 @@ describe('KPI API -> Get Runtime Informations - ', () => {
   });
 
   it('should successfully get the runtime information for a FlowNode with an odd number of executions', async () => {
-    const flowNodeToQuery = 'UserTask_1';
+    const flowNodeToQuery = 'UserTask_1'; // in the metrics sample file, this task was run 5 times.
     const runtimeInfo = await kpiApiService.getRuntimeInformationForFlowNode(dummyIdentity, processModelId, flowNodeToQuery);
 
     should(runtimeInfo).not.be.an.Array();
@@ -88,8 +88,8 @@ describe('KPI API -> Get Runtime Informations - ', () => {
     should(runtimeInfo.thirdQuartileRuntimeInMs).be.equal(expectedThirdQuartileRuntimeInMs);
   });
 
-  it('should successfully get the runtime information for a FlowNode with a round number of executions', async () => {
-    const flowNodeToQuery = 'ScriptTask_1';
+  it('should successfully get the runtime information for a FlowNode with an even number of executions', async () => {
+    const flowNodeToQuery = 'ScriptTask_1'; // in the metrics sample file, this task was run 20 times.
     const runtimeInfo = await kpiApiService.getRuntimeInformationForFlowNode(dummyIdentity, processModelId, flowNodeToQuery);
 
     should(runtimeInfo).not.be.an.Array();
