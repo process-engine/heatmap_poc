@@ -46,7 +46,7 @@ describe('KPI API -> Get Active Tokens - ', () => {
     const activeTokens = await kpiApiService.getActiveTokensForProcessModel(dummyIdentity, processModelId);
 
     should(activeTokens).be.an.Array();
-    should(activeTokens.length).be.equal(2); // 2 UserTasks and 1 Parallel Split Gateway
+    should(activeTokens.length).be.equal(2); // 2 UserTasks running in parallel executed branches
 
     for (const activeToken of activeTokens) {
       assertActiveToken(activeToken, activeToken.flowNodeId);
@@ -74,7 +74,7 @@ describe('KPI API -> Get Active Tokens - ', () => {
     const activeTokens = await kpiApiService.getActiveTokensForProcessModel(dummyIdentity, processModelId);
 
     should(activeTokens).be.an.Array();
-    should(activeTokens.length).be.equal(2); // 2 UserTasks and 1 Parallel Split Gateway
+    should(activeTokens.length).be.equal(2); // 2 UserTasks running in parallel executed branches
 
     for (const activeToken of activeTokens) {
       assertActiveToken(activeToken, activeToken.flowNodeId);
