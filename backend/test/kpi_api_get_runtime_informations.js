@@ -62,7 +62,7 @@ describe('KPI API -> Get Runtime Informations - ', () => {
     }
   });
 
-  it('should successfully get the runtime information for a FlowNode', async () => {
+  it('should successfully get the runtime information for a FlowNode with an odd number of executions', async () => {
     const flowNodeToQuery = 'UserTask_1';
     const runtimeInfo = await kpiApiService.getRuntimeInformationForFlowNode(dummyIdentity, processModelId, flowNodeToQuery);
 
@@ -74,9 +74,35 @@ describe('KPI API -> Get Runtime Informations - ', () => {
     const expectedMinRuntimeInMs = 793;
     const expectedMaxRuntimeInMs = 827;
     const expectedArithmeticMeanRuntimeInMs = 812;
-    const expectedFirstQuartileRuntimeInMs = 0;
-    const expectedMedianRuntimeInMs = 0;
-    const expectedThirdQuartileRuntimeInMs = 0;
+    const expectedFirstQuartileRuntimeInMs = 793;
+    const expectedMedianRuntimeInMs = 814;
+    const expectedThirdQuartileRuntimeInMs = 827;
+
+    should(runtimeInfo.flowNodeId).be.equal(expectedFlowNodeId);
+    should(runtimeInfo.processModelId).be.equal(expectedProcessModelId);
+    should(runtimeInfo.minRuntimeInMs).be.equal(expectedMinRuntimeInMs);
+    should(runtimeInfo.maxRuntimeInMs).be.equal(expectedMaxRuntimeInMs);
+    should(runtimeInfo.arithmeticMeanRuntimeInMs).be.equal(expectedArithmeticMeanRuntimeInMs);
+    should(runtimeInfo.firstQuartileRuntimeInMs).be.equal(expectedFirstQuartileRuntimeInMs);
+    should(runtimeInfo.medianRuntimeInMs).be.equal(expectedMedianRuntimeInMs);
+    should(runtimeInfo.thirdQuartileRuntimeInMs).be.equal(expectedThirdQuartileRuntimeInMs);
+  });
+
+  it('should successfully get the runtime information for a FlowNode with a round number of executions', async () => {
+    const flowNodeToQuery = 'ScriptTask_1';
+    const runtimeInfo = await kpiApiService.getRuntimeInformationForFlowNode(dummyIdentity, processModelId, flowNodeToQuery);
+
+    should(runtimeInfo).not.be.an.Array();
+    should(runtimeInfo.constructor.name).be.equal('FlowNodeRuntimeInformation');
+
+    const expectedFlowNodeId = 'ScriptTask_1';
+    const expectedProcessModelId = 'kpi_api_test_data';
+    const expectedMinRuntimeInMs = 9;
+    const expectedMaxRuntimeInMs = 13;
+    const expectedArithmeticMeanRuntimeInMs = 10;
+    const expectedFirstQuartileRuntimeInMs = 9;
+    const expectedMedianRuntimeInMs = 10;
+    const expectedThirdQuartileRuntimeInMs = 12;
 
     should(runtimeInfo.flowNodeId).be.equal(expectedFlowNodeId);
     should(runtimeInfo.processModelId).be.equal(expectedProcessModelId);
