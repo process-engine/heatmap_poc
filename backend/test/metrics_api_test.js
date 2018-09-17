@@ -14,7 +14,7 @@ describe('Metric API Tests - ', () => {
   const correlationId = uuid.v4();
   const startEventId = 'StartEvent_1mox3jl';
 
-  const expectedLogFilePath = path.join('metrics', `${processModelId}.met`);
+  const expectedMetricsFilePath = path.join('metrics', `${processModelId}.met`);
 
   before(async () => {
     testFixtureProvider = new TestFixtureProvider();
@@ -28,39 +28,39 @@ describe('Metric API Tests - ', () => {
     await testFixtureProvider.tearDown();
   });
 
-  it('should write Logs to the expected filepath, using the Correlation ID as a folder and the ProcessModelId as filename.', async () => {
-    const processModelLogIsAtExpectedLocation = fs.existsSync(expectedLogFilePath);
-    should(processModelLogIsAtExpectedLocation).be.true(`The log file was not writen to the expected path '${expectedLogFilePath}'!`);
+  it('should write metrics to the expected filepath, using the ProcessModelId as filename.', async () => {
+    const metricsAreAtExpectedLocation = fs.existsSync(expectedMetricsFilePath);
+    should(metricsAreAtExpectedLocation).be.true(`The metrics were not writen to the expected path '${expectedMetricsFilePath}'!`);
   });
 
-  it('should properly format the log entries when writing them to the file and place each entry to a new line', () => {
-    const logEntries = readLogFileContent(expectedLogFilePath);
-    const logsAreProperlyFormatted = Array.isArray(logEntries) && logEntries.length > 1;
-    should(logsAreProperlyFormatted).be.true('The log entries are not properly separated by a newline!');
+  it('should properly format the metrics when writing them to the file and place each entry to a new line', () => {
+    const metrics = readMetricsFile(expectedMetricsFilePath);
+    const metricsAreProperlyFormatted = Array.isArray(metrics) && metrics.length > 1;
+    should(metricsAreProperlyFormatted).be.true('The metrics are not properly separated by a newline!');
   });
 
   it('should write entries for each stage of the ProcessModels execution', () => {
-    const logEntries = readLogFileContent(expectedLogFilePath);
+    const metrics = readMetricsFile(expectedMetricsFilePath);
 
-    const expectedLogEntryForProcessStarted = /heatmap_sample.*?onProcessStart/i;
-    const expectedLogEntryForProcessFinished = /heatmap_sample.*?onProcessFinish/i;
+    const expectedEntryForProcessStarted = /heatmap_sample.*?onProcessStart/i;
+    const expectedEntryForProcessFinished = /heatmap_sample.*?onProcessFinish/i;
 
-    const processStartWasMeasured = logEntries.some((entry) => {
-      return entry.match(expectedLogEntryForProcessStarted);
+    const processStartWasMeasured = metrics.some((entry) => {
+      return entry.match(expectedEntryForProcessStarted);
     });
-    should(processStartWasMeasured).be.equal(true, 'No process-start metrics were logged for ProcessModel \'heatmap_sample\'!');
+    should(processStartWasMeasured).be.equal(true, 'No process-start metrics were created for ProcessModel \'heatmap_sample\'!');
 
-    const processFinishWasMeasured = logEntries.some((entry) => {
-      return entry.match(expectedLogEntryForProcessFinished);
+    const processFinishWasMeasured = metrics.some((entry) => {
+      return entry.match(expectedEntryForProcessFinished);
     });
 
-    should(processFinishWasMeasured).be.equal(true, 'No process-finished metrics were logged for ProcessModel \'heatmap_sample\'!');
+    should(processFinishWasMeasured).be.equal(true, 'No process-finished metrics were created for ProcessModel \'heatmap_sample\'!');
   });
 
   it('should write entries for each state change of each FlowNodeInstance', () => {
-    const logEntries = readLogFileContent(expectedLogFilePath);
+    const metrics = readMetricsFile(expectedMetricsFilePath);
 
-    const expectedLogMessages = [
+    const expectedMessages = [
       'onFlowNodeEnter',
       'onFlowNodeExit',
     ];
@@ -75,15 +75,15 @@ describe('Metric API Tests - ', () => {
     ];
 
     for (const flowNodeName of expectedFlowNodeEntries) {
-      for (const message of expectedLogMessages) {
+      for (const message of expectedMessages) {
 
-        const expectedLogEntry = new RegExp(`heatmap_sample.*?${flowNodeName}.*?${message}`, 'i');
+        const expectedMetricEntry = new RegExp(`heatmap_sample.*?${flowNodeName}.*?${message}`, 'i');
 
-        const logHasMatchingEntry = logEntries.some((entry) => {
-          return entry.match(expectedLogEntry);
+        const metricHasMatchingEntry = metrics.some((entry) => {
+          return entry.match(expectedMetricEntry);
         });
 
-        should(logHasMatchingEntry).be.equal(true, `No '${message}' type metrics were logged for FlowNode ${flowNodeName}!`);
+        should(metricHasMatchingEntry).be.equal(true, `No '${message}' type metrics were created for FlowNode ${flowNodeName}!`);
       }
     }
   });
@@ -97,17 +97,17 @@ describe('Metric API Tests - ', () => {
     await testFixtureProvider.executeProcess(processModelId, startEventId, correlationId, initialToken);
   }
 
-  function readLogFileContent(logFilePath) {
+  function readMetricsFile(filePath) {
 
     // Don't parse anything here. Leave that to the tests of the logging service, where it belongs.
-    const logFileContent = fs.readFileSync(logFilePath, 'utf-8');
+    const fileContent = fs.readFileSync(filePath, 'utf-8');
 
-    const logEntries = logFileContent.split('\n');
+    const metrics = fileContent.split('\n');
 
-    const logEntriesWithoutEmptyLines = logEntries.filter((entry) => {
+    const metricsWithoutEmptyLines = metrics.filter((entry) => {
       return entry.length > 1; // final empty line length will be 1, because of the \n.
     });
 
-    return logEntriesWithoutEmptyLines;
+    return metricsWithoutEmptyLines;
   }
 });
