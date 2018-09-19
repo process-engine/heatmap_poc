@@ -87,8 +87,8 @@ describe('Logging API Tests - ', () => {
     should(logEntries.length).be.equal(14);
 
     const expectedLogMessageTypes = [
-      /FNI Entered/i,
-      /FNI Exited/i,
+      /FlowNodeInstance Log Message/i,
+      /Another Logged Message/i,
     ];
 
     const expectedFlowNodeEntries = [
