@@ -14,7 +14,7 @@ describe('Metric API Tests - ', () => {
   const correlationId = uuid.v4();
   const startEventId = 'StartEvent_1mox3jl';
 
-  const expectedMetricsFilePath = path.join('metrics', `${processModelId}.met`);
+  const expectedMetricsFilePath = path.join('test', 'metrics', `${processModelId}.met`);
 
   before(async () => {
     testFixtureProvider = new TestFixtureProvider();

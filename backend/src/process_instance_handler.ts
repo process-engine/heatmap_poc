@@ -58,7 +58,8 @@ export class ProcessInstanceHandler {
       const flowNodeInstances: Array<any> =
         await flowNodeInstanceService.querySuspendedByCorrelation(correlationId);
 
-      if (flowNodeInstances && flowNodeInstances.length >= 1) {
+      const suspendedFlowNodeReached: boolean = flowNodeInstances && flowNodeInstances.length >= 1;
+      if (suspendedFlowNodeReached) {
         return;
       }
     }
