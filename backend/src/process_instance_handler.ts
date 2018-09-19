@@ -51,7 +51,9 @@ export class ProcessInstanceHandler {
     const flowNodeInstanceService: IFlowNodeInstanceService =
       await this.testFixtureProvider.resolveAsync<IFlowNodeInstanceService>('FlowNodeInstanceService');
 
-    for (let i: number = 0; i < maxNumberOfRetries; i++) {
+    const attempts: any = Array.from(new Array(maxNumberOfRetries), (val: number, index: number) => index);
+
+    for (const attempt in attempts) {
 
       await this.wait(delayBetweenRetriesInMs);
 
